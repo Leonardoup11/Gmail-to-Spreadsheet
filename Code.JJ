@@ -1,0 +1,82 @@
+function myFunction() {
+  Logger.log("I am testing");
+}
+
+function parse_email(){
+ 
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet =ss.getSheetByName("Leads");
+ 
+ 
+  var label = GmailApp.getUserLabelByName("Leon");
+  var threads = label.getThreads();
+ 
+  for (var i = 0; i < threads.length; i++) {
+       var messages = threads[i].getMessages();
+       for(var j=0; j<messages.length; j++) {
+           var dat = messages[j].getDate();
+           var from = messages[j].getFrom();
+           var sub = messages[j].getSubject();
+           var pmsg = messages[j].getPlainBody();
+         
+         
+           var name = ""
+           var phone = ""
+           var email = ""
+           var source = "urb17001@byui.edu";
+         
+     
+           var zip = "";
+           var promo = "";
+           var url = "";
+   
+          Logger.log(pmsg);
+         
+           if(pmsg.indexOf ("Name: ")>0) {
+           var end = pmsg.substring(pmsg.indexOf("Name:")+6,pmsg.length);
+           name = end.substring(0, end.indexOf("\n"));
+          }
+         if(pmsg.indexOf ("Email: ")>0) {
+           var end = pmsg.substring(pmsg.indexOf("Email: ")+7,pmsg.length);
+           email = end.substring(0, end.indexOf("\n"));
+         }
+           if(pmsg.indexOf("Phone: ")>0) {
+          var end = pmsg. substring (pmsg.indexOf ("Phone:")+7, pmsg.length);
+          phone = end.substring(0, end.indexOf("\n"));
+           }
+  
+          if(pmsg.indexOf("Zip Code: ")>0) {
+          var end = pmsg.substring(pmsg.indexOf("Zip Code: ")+9,pmsg.length);
+          zip = end.substring(0, end.indexOf("\n"));
+}
+              if(pmsg.indexOf("Promo Code: ")>0) {
+          var end = pmsg.substring(pmsg.indexOf("Promo Code: ")+11,pmsg.length);
+          promo = end.substring(0, end.indexOf("\n"));
+} 
+         if(pmsg.indexOf("Form Page URL: ")>0) {
+          var end = pmsg.substring(pmsg.indexOf("Form Page URL: ")+13,pmsg.length);
+          url = end.substring(0, end.indexOf("\n"));
+} 
+     
+         Logger.log( "Name Test: " + name);
+          var status = "Lead"
+          //Status Name Phone Email Address Unit city State zip
+          sheet.appendRow([status, dat, name, email, phone,  zip, promo,url]);
+          }
+       threads[i].removeLabel(label);
+       threads[i].addLabel(GmailApp.getUserLabelByName("Leon Read"));
+       threads[i].moveToArchive();
+  }
+  sort(); 
+}
+
+function sort() {
+    var sortFirst = 2;
+    var sortFirstAsc = false;
+    var sortSecond = 3;
+    var sortSecondAsc = false;
+    var headerRows = 2;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet =ss.getSheetByName("Leads");
+    var range = sheet.getRange (headerRows+2.2, sheet.getMaxRows () - headerRows,sheet.getLastColumn());
+}
